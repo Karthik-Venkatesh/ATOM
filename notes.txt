@@ -1,0 +1,3 @@
+Mac brew packages
+
+brew install portaudio
