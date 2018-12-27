@@ -5,11 +5,12 @@ from vision import frames
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(BASE_DIR + "/cascades/data/haarcascade_frontalface_alt2.xml")
+WAITKEY_MILLI_SECONDS = 20
 
 class ComputerVision:
 
     cap = cv2.VideoCapture(0)
-    save_face = True
+    save_face = False
 
     def __init__(self):
         print("Computer Vision Instantiated...")
@@ -25,8 +26,14 @@ class ComputerVision:
 
             cv2.imshow('frame', frame)
 
-            if cv2.waitKey(20) & 0xFF == ord('q'):
+            waitKey = cv2.waitKey(WAITKEY_MILLI_SECONDS)
+
+            if waitKey == ord('q'):
                 break
+            elif waitKey == ord('s'):
+                self.save_face = True
+            elif waitKey == ord('d'):
+                self.save_face = False
 
     def stop_recording(self):
         cv2.destroyWindow(self.cap)
