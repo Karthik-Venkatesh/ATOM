@@ -1,5 +1,6 @@
 
 import speech_recognition as sr
+from utills import reachability
 
 class VoiceListener():
 
@@ -16,7 +17,12 @@ class VoiceListener():
                 audio = self.recognizer.listen(source)
 
             try:
-                print("Transcription: " + self.recognizer.recognize_sphinx(audio))
+                # Getting transcription from google when internet is available. Otherwise getting transcription from CMUSphinx.
+                # NOTE: CMUSphinx not giving correct text while i am speaking
+                if reachability.is_connected():
+                    print("Transcription: " + self.recognizer.recognize_google(audio))
+                else:
+                    print("Transcription: " + self.recognizer.recognize_sphinx(audio))
             except sr.UnknownValueError:
                 print("Audio unitelligible")
             except sr.RequestError as e:
