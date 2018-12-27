@@ -12,7 +12,7 @@ class ComputerVision:
     save_face = True
 
     def __init__(self):
-        print("")
+        print("Computer Vision Instantiated...")
 
     def start_recording(self):
         print("Computer Vision Started...")
