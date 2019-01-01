@@ -18,8 +18,8 @@ class ModelTrainer:
     x_train = []
     y_labels = []
 
-    def train_model(self):
-        trainning_images_dir = os.path.join(BASE_DIR, "training_images")
+    def train_model(self, model_folder):
+        trainning_images_dir = os.path.join(BASE_DIR, "training_images/" + model_folder)
         for root, dirs, files in os.walk(trainning_images_dir):
             for file in files:
                 if file.endswith("png") or file.endswith("jpg"):
@@ -39,6 +39,11 @@ class ModelTrainer:
                         roi = image_array[y: y + h, x: x + w]
                         self.x_train.append(roi)
                         self.y_labels.append(id_)
+
+        if not self.x_train:
+            return False
+        else:
+            return True
 
     def save_model(self):
         models_dir = os.path.join(BASE_DIR, "models")
