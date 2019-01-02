@@ -18,8 +18,8 @@ class ModelTrainer:
     x_train = []
     y_labels = []
 
-    def train_model(self, model_folder):
-        trainning_images_dir = os.path.join(BASE_DIR, "training_images/" + model_folder)
+    def train_model(self):
+        trainning_images_dir = os.path.join(BASE_DIR, "training_images")
         for root, dirs, files in os.walk(trainning_images_dir):
             for file in files:
                 if file.endswith("png") or file.endswith("jpg"):
@@ -30,10 +30,9 @@ class ModelTrainer:
                         self.current_id += 1
                     id_ = self.label_ids[label]
 
-                    pil_image = Image.open(path).convert("L")  # Grayscale
-                    image_array: ndarray = np.array(pil_image, "uint8")
-
-                    faces = self.face_cascade.detectMultiScale(image_array, scaleFactor=1.5, minNeighbors=5)
+                    img = cv2.imread(path)
+                    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
 
                     for (x, y, w, h) in faces:
                         roi = image_array[y: y + h, x: x + w]
@@ -61,3 +60,7 @@ class ModelTrainer:
 
         self.recognizer.train(self.x_train, np.array(self.y_labels))
         self.recognizer.save(model_dir + "/" + "trainer.yml")
+
+# trainer = ModelTrainer()
+# if trainer.train_model():
+#     trainer.save_model()

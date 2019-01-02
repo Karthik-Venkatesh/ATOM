@@ -8,7 +8,7 @@ import shutil
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(BASE_DIR + "/cascades/data/haarcascade_frontalface_alt2.xml")
 WAIT_KEY_MILLI_SECONDS = 20
-
+DEFAULT_IMAGE_COUNT = 30
 
 class ComputerVision:
 
@@ -27,10 +27,13 @@ class ComputerVision:
             ret, frame = self.cap.read()
             frame = frames.rescale_frame(frame, percent=30)
 
-            model_folder = "myImage"
+            model_folder_name = "myImage"
+            model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + model_folder_name)
 
             if self.save_face:
-                self.save_faces(frame, model_folder)
+                if self.save_faces(frame, model_folder_path) == False:
+                    self.save_face = False
+                    self.train_model()
 
             self.predict_faces(frame)
 
@@ -41,31 +44,26 @@ class ComputerVision:
             if wait_key == ord('q'):
                 break
             elif wait_key == ord('s'):
-                if os.path.exists(os.path.join(BASE_DIR, "training_images" + "/" + model_folder)):
-                    shutil.rmtree(os.path.join(BASE_DIR, "training_images" + "/" + model_folder))
+                if os.path.exists(model_folder_path):
+                    shutil.rmtree(model_folder_path)
                 self.save_face = True
-            elif wait_key == ord('d'):
-                self.save_face = False
-                trainer = ModelTrainer()
-                if trainer.train_model(model_folder):
-                    trainer.save_model()
-                    self.load_latest_model()
-                else:
-                    print("Error: Model trainning failed...")
 
     def stop_recording(self):
         cv2.destroyWindow(self.cap)
         print("Computer Vision Stopped...")
 
-    def save_faces(self, frame, model_folder):
+    def save_faces(self, frame, model_folder_path):
 
-        image_dir = os.path.join(BASE_DIR, "training_images" + "/" + model_folder)
+        image_dir = model_folder_path
 
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
 
         files = os.listdir(image_dir)
         file_count = len(files)
+
+        if file_count >= DEFAULT_IMAGE_COUNT:
+            return False
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
@@ -75,8 +73,20 @@ class ComputerVision:
             roi_face = gray[y: y+h, x: x+w]
             cv2.imwrite(img_item, roi_face)
 
+        return True
+
+    def train_model(self):
+        trainer = ModelTrainer()
+        if trainer.train_model():
+            trainer.save_model()
+            self.load_latest_model()
+        else:
+            print("Error: Model trainning failed...")
+
     def load_latest_model(self):
         latest_model_dir = self.latest_model_dir()
+        if not latest_model_dir:
+            return
         trainer_file = latest_model_dir + "/" + "trainer.yml"
         pickle_file = latest_model_dir + "/" + "labels.pickle"
         if os.path.exists(trainer_file) & os.path.exists(pickle_file):
@@ -92,10 +102,13 @@ class ComputerVision:
 
     def latest_model_dir(self):
         models_dir = os.path.join(BASE_DIR, "models")
-        files = os.listdir(models_dir)
-        version = len(files)
-        latest_model_dir = os.path.join(models_dir, "version_" + str(version))
-        return latest_model_dir
+        if os.path.exists(models_dir):
+            files = os.listdir(models_dir)
+            version = len(files)
+            latest_model_dir = os.path.join(models_dir, "version_" + str(version))
+            if os.path.exists(latest_model_dir):
+                return latest_model_dir
+        return None
 
     def predict_faces(self, frame):
 
