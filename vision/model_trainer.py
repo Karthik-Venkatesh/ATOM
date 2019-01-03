@@ -45,15 +45,10 @@ class ModelTrainer:
             return True
 
     def save_model(self):
-        models_dir = os.path.join(BASE_DIR, "models")
+        model_dir = os.path.join(BASE_DIR, "model")
 
-        if not os.path.exists(models_dir):
-            os.makedirs(models_dir)
-
-        files = os.listdir(models_dir)
-        version = len(files) +1
-        model_dir = os.path.join(models_dir, "version_" + str(version))
-        os.makedirs(model_dir)
+        if not os.path.exists(model_dir):
+            os.makedirs(model_dir)
 
         with open(model_dir + "/" + "labels.pickle", "wb") as f:
             pickle.dump(self.label_ids, f)
