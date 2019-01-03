@@ -84,7 +84,7 @@ class ComputerVision:
             print("Error: Model trainning failed...")
 
     def load_latest_model(self):
-        latest_model_dir = self.latest_model_dir()
+        latest_model_dir = os.path.join(BASE_DIR, "model")
         if not latest_model_dir:
             return
         trainer_file = latest_model_dir + "/" + "trainer.yml"
@@ -99,16 +99,6 @@ class ComputerVision:
         else:
             self.recognizer = None
             self.labels = {}
-
-    def latest_model_dir(self):
-        models_dir = os.path.join(BASE_DIR, "models")
-        if os.path.exists(models_dir):
-            files = os.listdir(models_dir)
-            version = len(files)
-            latest_model_dir = os.path.join(models_dir, "version_" + str(version))
-            if os.path.exists(latest_model_dir):
-                return latest_model_dir
-        return None
 
     def predict_faces(self, frame):
 
