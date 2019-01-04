@@ -4,6 +4,7 @@ import numpy as np
 from numpy.core.multiarray import ndarray
 import cv2
 import pickle
+import shutil
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -63,6 +64,8 @@ class ModelTrainer:
         self.recognizer.train(self.x_train, np.array(self.y_labels))
         self.recognizer.save(model_dir + "/" + "trainer.yml")
 
-# trainer = ModelTrainer()
-# if trainer.train_model():
-#     trainer.save_model()
+        self.delete_trainned_images()
+
+    def delete_trainned_images(self):
+        images_dir = os.path.join(BASE_DIR, "training_images")
+        shutil.rmtree(images_dir)
