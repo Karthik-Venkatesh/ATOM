@@ -30,10 +30,17 @@ class ModelTrainer:
                         self.current_id += 1
                     id_ = self.label_ids[label]
 
+                    pil_image = Image.open(path).convert('L') # Grayscale
+                    image_array: ndarray = np.array(pil_image, "uint8")
+                    faces = self.face_cascade.detectMultiScale(image_array, scaleFactor=1.5, minNeighbors=5)
+
+                    '''
+                    # Another way of getting faces.
+
                     img = cv2.imread(path)
                     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                     faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-
+                    '''
                     for (x, y, w, h) in faces:
                         roi = image_array[y: y + h, x: x + w]
                         self.x_train.append(roi)
