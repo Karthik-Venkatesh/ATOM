@@ -4,7 +4,7 @@ from numpy.core.multiarray import ndarray
 atom_db_client = MongoClient('mongodb://localhost:27017/')
 atom_db = atom_db_client["atom"]
 faces_col = atom_db["faces"]
-faces_info_col = atom_db["label"]
+faces_info_col = atom_db["labels"]
 
 
 def save_face_trainning_data(x_train: [], y_train: [], labels: {}):
