@@ -1,12 +1,12 @@
 
 import speech_recognition as sr
 from utills import reachability
+from nlp.name_extractor import NameExtractor
 
 
 class VoiceListener:
 
     recognizer = sr.Recognizer()
-    rocord = True
 
     def __init__(self):
         print("Voice Listener Instantiated...")
@@ -22,9 +22,12 @@ class VoiceListener:
                 # Otherwise getting transcription from CMUSphinx.
                 # NOTE: CMUSphinx not giving correct text while i am speaking
                 if reachability.is_connected():
-                    print("Transcription: " + self.recognizer.recognize_google(audio))
+                    voice_text = self.recognizer.recognize_google(audio)
                 else:
-                    print("Transcription: " + self.recognizer.recognize_sphinx(audio))
+                    voice_text = self.recognizer.recognize_google(audio)
+                print("Transcription: " + voice_text)
+                names: [] = NameExtractor.extract_names(voice_text)
+                print("Names: ", names)
             except sr.UnknownValueError:
                 print("Audio unitelligible")
             except sr.RequestError as e:
