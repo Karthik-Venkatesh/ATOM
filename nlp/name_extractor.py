@@ -21,7 +21,7 @@ class NameExtractor:
     def get_human_names(text):
         tokens = nltk.tokenize.word_tokenize(text)
         pos = nltk.pos_tag(tokens)
-        sent = nltk.ne_chunk(pos, binary = False)
+        sent = nltk.ne_chunk(pos, binary=False)
 
         person_list = []
         person = []

@@ -5,10 +5,12 @@ from vision.model_trainer import ModelTrainer
 import pickle
 import shutil
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(BASE_DIR + "/cascades/data/haarcascade_frontalface_alt2.xml")
 WAIT_KEY_MILLI_SECONDS = 20
 DEFAULT_IMAGE_COUNT = 30
+
 
 class ComputerVision:
 
@@ -31,7 +33,7 @@ class ComputerVision:
             model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + model_folder_name)
 
             if self.save_face:
-                if self.save_faces(frame, model_folder_path) == False:
+                if self.save_faces(frame, model_folder_path) is False:
                     self.save_face = False
                     self.train_model()
 
@@ -52,7 +54,8 @@ class ComputerVision:
         cv2.destroyWindow(self.cap)
         print("Computer Vision Stopped...")
 
-    def save_faces(self, frame, model_folder_path):
+    @staticmethod
+    def save_faces(frame, model_folder_path):
 
         image_dir = model_folder_path
 
@@ -81,7 +84,7 @@ class ComputerVision:
             trainer.save_model()
             self.load_latest_model()
         else:
-            print("Error: Model trainning failed...")
+            print("Error: Model training failed...")
 
     def load_latest_model(self):
         latest_model_dir = os.path.join(BASE_DIR, "model")
@@ -95,21 +98,20 @@ class ComputerVision:
 
             with open(pickle_file, "rb") as f:
                 og_labels = pickle.load(f)
-                self.labels = {v:k for k,v in og_labels.items()}
+                self.labels = {v: k for k, v in og_labels.items()}
         else:
             self.recognizer = None
             self.labels = {}
 
     def predict_faces(self, frame):
 
-        if self.recognizer == None:
+        if self.recognizer is None:
             return
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
         for (x, y, w, h) in faces:
             roi_gray = gray[y: y+h, x: x+w]
-            roi_color = frame[y: y+h, x: x+w]
 
             id_, conf = self.recognizer.predict(roi_gray)
             if conf > 45:
