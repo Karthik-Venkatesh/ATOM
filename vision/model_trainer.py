@@ -5,7 +5,6 @@ import numpy as np
 from numpy.core.multiarray import ndarray
 import cv2
 import pickle
-import shutil
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -65,9 +64,12 @@ class ModelTrainer:
         self.recognizer.train(self.x_train, np.array(self.y_labels))
         self.recognizer.save(model_dir + "/" + "trainer.yml")
 
-        self.delete_trained_images()
+        # https://github.com/Karthik-Venkatesh/atom/issues/13
+        # self.delete_trained_images()
 
     @staticmethod
     def delete_trained_images():
-        images_dir = os.path.join(BASE_DIR, "training_images")
-        shutil.rmtree(images_dir)
+        # images_dir = os.path.join(BASE_DIR, "training_images")
+        # shutil.rmtree(images_dir)
+        print("Deleting trained images be implemented in feature")
+        print("For detail check latest comment on github issue: https://github.com/Karthik-Venkatesh/atom/issues/13")
