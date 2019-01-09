@@ -1,3 +1,8 @@
+
+# Reference
+# Question link: https://stackoverflow.com/questions/20290870/improving-the-extraction-of-human-names-with-nltk
+# Answer link: https://stackoverflow.com/a/49500219/5019015
+
 import nltk
 from nltk.corpus import wordnet
 
