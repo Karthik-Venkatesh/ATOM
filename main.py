@@ -1,3 +1,6 @@
+from vision.computer_vision import ComputerVision
+from listener.voice_listener import VoiceListener
+
 print("")
 print("#######################################")
 print("")
@@ -10,12 +13,6 @@ print("      /_/    \_\_|  \____/|_|  |_|     ")
 print("")
 print("#######################################")
 print("")
-
-
-
-
-from vision.computer_vision import ComputerVision
-from listener.voice_listener import VoiceListener
 
 cv = ComputerVision()
 cv.start_recording()

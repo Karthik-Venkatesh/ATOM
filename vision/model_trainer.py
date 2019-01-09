@@ -1,4 +1,5 @@
 import os
+
 from PIL import Image
 import numpy as np
 from numpy.core.multiarray import ndarray
@@ -20,18 +21,18 @@ class ModelTrainer:
     y_labels = []
 
     def train_model(self):
-        trainning_images_dir = os.path.join(BASE_DIR, "training_images")
-        for root, dirs, files in os.walk(trainning_images_dir):
+        training_images_dir = os.path.join(BASE_DIR, "training_images")
+        for root, dirs, files in os.walk(training_images_dir):
             for file in files:
                 if file.endswith("png") or file.endswith("jpg"):
                     path = os.path.join(root, file)
                     label = os.path.basename(root).replace(" ", "-").lower()
-                    if not label in self.label_ids:
+                    if label not in self.label_ids:
                         self.label_ids[label] = self.current_id
                         self.current_id += 1
                     id_ = self.label_ids[label]
 
-                    pil_image = Image.open(path).convert('L') # Grayscale
+                    pil_image = Image.open(path).convert('L')  # Grayscale
                     image_array: ndarray = np.array(pil_image, "uint8")
                     faces = self.face_cascade.detectMultiScale(image_array, scaleFactor=1.5, minNeighbors=5)
 
@@ -64,8 +65,9 @@ class ModelTrainer:
         self.recognizer.train(self.x_train, np.array(self.y_labels))
         self.recognizer.save(model_dir + "/" + "trainer.yml")
 
-        self.delete_trainned_images()
+        self.delete_trained_images()
 
-    def delete_trainned_images(self):
+    @staticmethod
+    def delete_trained_images():
         images_dir = os.path.join(BASE_DIR, "training_images")
         shutil.rmtree(images_dir)
