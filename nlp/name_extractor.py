@@ -49,6 +49,7 @@ class NameExtractor:
 
         return person_names
 
-    def extract_names(self, text):
-        names = self.get_human_names(text)
+    @staticmethod
+    def extract_names(text: str):
+        names = NameExtractor.get_human_names(text)
         return names
