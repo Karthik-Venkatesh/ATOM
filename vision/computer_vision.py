@@ -117,3 +117,16 @@ class ComputerVision:
             if conf > 45:
                 print("label_id: ", id_)
                 print("label: ", self.labels[id_])
+
+    @staticmethod
+    def show_rect(frame, faces=None):
+        
+        if faces is None:
+            faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
+
+        for (x, y, w, h) in faces:
+            color = (255, 0, 0)
+            stroke = 2
+            end_coord_x = x + w
+            end_coord_y = y + h
+            cv2.rectangle(frame, (x, y), (end_coord_x, end_coord_y), color, stroke)
