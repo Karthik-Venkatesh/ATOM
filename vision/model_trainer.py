@@ -7,11 +7,12 @@ import cv2
 import pickle
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CASCADE_PATH = os.path.join(BASE_DIR, "cascades/data")
 
 
 class ModelTrainer:
 
-    face_cascade = cv2.CascadeClassifier(BASE_DIR + '/cascades/data/haarcascade_frontalface_alt2.xml')
+    face_cascade = cv2.CascadeClassifier(CASCADE_PATH + "/haarcascades/haarcascade_frontalface_alt2.xml")
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     current_id = 0
