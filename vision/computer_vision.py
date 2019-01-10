@@ -5,10 +5,11 @@ from vision.model_trainer import ModelTrainer
 import pickle
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CASCADE_PATH = os.path.join(BASE_DIR, "/cascades/data")
+CASCADE_PATH = os.path.join(BASE_DIR, "cascades/data")
 HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(CASCADE_PATH + "/haarcascades/haarcascade_frontalface_alt2.xml")
 WAIT_KEY_MILLI_SECONDS = 20
 DEFAULT_IMAGE_COUNT = 30
+FRAME_SCALE_PERCENT = 50
 
 
 class ComputerVision:
@@ -17,7 +18,7 @@ class ComputerVision:
     labels = {}
     recognizer = None
     model_folder_path = None
-    faces_count: int = 0
+    image_count: int = 0
 
     def __init__(self):
         print("Computer Vision Instantiated...")
@@ -27,7 +28,7 @@ class ComputerVision:
         print("Computer Vision Started...")
         while True:
             ret, frame = self.cap.read()
-            frame = frames.rescale_frame(frame, percent=30)
+            frame = frames.rescale_frame(frame, percent=FRAME_SCALE_PERCENT)
 
             if self.model_folder_path is not None:
                 if self.save_faces(frame, self.model_folder_path) is False:
@@ -35,6 +36,7 @@ class ComputerVision:
                     self.train_model()
 
             self.predict_faces(frame)
+            self.show_rect(frame)
 
             cv2.imshow('frame', frame)
 
@@ -50,30 +52,27 @@ class ComputerVision:
 
     def add_face(self, label: str):
         self.model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + label)
+        if os.path.exists(self.model_folder_path):
+            self.image_count = len(os.listdir(self.model_folder_path))
+        else:
+            self.image_count = 0
 
     def save_faces(self, frame, model_folder_path):
 
-        image_dir = model_folder_path
+        if not os.path.exists(model_folder_path):
+            os.makedirs(model_folder_path)
 
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-
-        files = os.listdir(image_dir)
+        files = os.listdir(model_folder_path)
         file_count = len(files)
 
-        if self.faces_count >= DEFAULT_IMAGE_COUNT:
-            self.faces_count = 0
+        if file_count >= (self.image_count + DEFAULT_IMAGE_COUNT):
             return False
-        else:
-            self.faces_count += 1
 
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
-        img_item = image_dir + "/" + str(file_count + 1) + ".jpg"
+        faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
+        img_item = model_folder_path + "/" + str(file_count + 1) + ".jpg"
 
-        for (x, y, w, h) in faces:
-            roi_face = gray[y: y+h, x: x+w]
-            cv2.imwrite(img_item, roi_face)
+        if len(faces) > 0:
+            cv2.imwrite(img_item, frame)
 
         return True
 
