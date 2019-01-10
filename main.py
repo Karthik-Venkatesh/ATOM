@@ -1,5 +1,4 @@
-from vision.computer_vision import ComputerVision
-from listener.voice_listener import VoiceListener
+from sense.sensor import Sensor
 
 print("")
 print("#######################################")
@@ -14,8 +13,6 @@ print("")
 print("#######################################")
 print("")
 
-cv = ComputerVision()
-cv.start_recording()
 
-vl = VoiceListener()
-vl.record()
+sensor = Sensor()
+sensor.start_senses()

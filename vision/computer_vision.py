@@ -3,8 +3,6 @@ import os
 from vision import frames
 from vision.model_trainer import ModelTrainer
 import pickle
-import shutil
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(BASE_DIR + "/cascades/data/haarcascade_frontalface_alt2.xml")
@@ -15,9 +13,10 @@ DEFAULT_IMAGE_COUNT = 30
 class ComputerVision:
 
     cap = cv2.VideoCapture(0)
-    save_face = False
     labels = {}
     recognizer = None
+    model_folder_path = None
+    faces_count: int = 0
 
     def __init__(self):
         print("Computer Vision Instantiated...")
@@ -29,12 +28,9 @@ class ComputerVision:
             ret, frame = self.cap.read()
             frame = frames.rescale_frame(frame, percent=30)
 
-            model_folder_name = "myImage"
-            model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + model_folder_name)
-
-            if self.save_face:
-                if self.save_faces(frame, model_folder_path) is False:
-                    self.save_face = False
+            if self.model_folder_path is not None:
+                if self.save_faces(frame, self.model_folder_path) is False:
+                    self.model_folder_path = None
                     self.train_model()
 
             self.predict_faces(frame)
@@ -44,18 +40,17 @@ class ComputerVision:
             wait_key = cv2.waitKey(WAIT_KEY_MILLI_SECONDS)
 
             if wait_key == ord('q'):
+                self.stop_recording()
                 break
-            elif wait_key == ord('s'):
-                if os.path.exists(model_folder_path):
-                    shutil.rmtree(model_folder_path)
-                self.save_face = True
 
     def stop_recording(self):
         cv2.destroyWindow(self.cap)
         print("Computer Vision Stopped...")
 
-    @staticmethod
-    def save_faces(frame, model_folder_path):
+    def add_face(self, label: str):
+        self.model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + label)
+
+    def save_faces(self, frame, model_folder_path):
 
         image_dir = model_folder_path
 
@@ -65,8 +60,11 @@ class ComputerVision:
         files = os.listdir(image_dir)
         file_count = len(files)
 
-        if file_count >= DEFAULT_IMAGE_COUNT:
+        if self.faces_count >= DEFAULT_IMAGE_COUNT:
+            self.faces_count = 0
             return False
+        else:
+            self.faces_count += 1
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(gray, scaleFactor=1.5, minNeighbors=5)
@@ -79,6 +77,8 @@ class ComputerVision:
         return True
 
     def train_model(self):
+        self.model_folder_path = None
+
         trainer = ModelTrainer()
         if trainer.train_model():
             trainer.save_model()
