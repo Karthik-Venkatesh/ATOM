@@ -8,12 +8,12 @@ class Sensor:
     listener: VoiceListener
 
     def start_senses(self):
-        self.vision = ComputerVision()
-        self.vision.start_recording()
-
         self.listener = VoiceListener()
         self.listener.sensor = self
-        self.listener.record()
+        self.listener.listen()
+
+        self.vision = ComputerVision()
+        self.vision.start_recording()
 
     def trigger_add_face(self, label: [str]):
         if self.vision is not None:
