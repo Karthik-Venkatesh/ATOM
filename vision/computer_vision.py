@@ -5,7 +5,8 @@ from vision.model_trainer import ModelTrainer
 import pickle
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(BASE_DIR + "/cascades/data/haarcascade_frontalface_alt2.xml")
+CASCADE_PATH = os.path.join(BASE_DIR, "/cascades/data")
+HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(CASCADE_PATH + "/haarcascades/haarcascade_frontalface_alt2.xml")
 WAIT_KEY_MILLI_SECONDS = 20
 DEFAULT_IMAGE_COUNT = 30
 
