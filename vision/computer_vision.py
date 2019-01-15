@@ -3,13 +3,7 @@ import os
 from vision import frames
 from vision.model_trainer import ModelTrainer
 import pickle
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CASCADE_PATH = os.path.join(BASE_DIR, "cascades/data")
-HAARCASCADE_FRONTAL_FACE_ALT2 = cv2.CascadeClassifier(CASCADE_PATH + "/haarcascades/haarcascade_frontalface_alt2.xml")
-WAIT_KEY_MILLI_SECONDS = 20
-DEFAULT_IMAGE_COUNT = 30
-FRAME_SCALE_PERCENT = 50
+from constants import constant
 
 
 class ComputerVision:
@@ -19,16 +13,18 @@ class ComputerVision:
     recognizer = None
     model_folder_path = None
     image_count: int = 0
+    cascade_classifier = cv2.CascadeClassifier(constant.HAARCASCADE_FRONTAL_FACE_ALT2)
 
     def __init__(self):
         print("Computer Vision Instantiated...")
+        print(constant.HAARCASCADE_FRONTAL_FACE_ALT2)
         self.load_latest_model()
 
     def start_recording(self):
         print("Computer Vision Started...")
         while True:
             ret, frame = self.cap.read()
-            frame = frames.rescale_frame(frame, percent=FRAME_SCALE_PERCENT)
+            frame = frames.rescale_frame(frame, percent=constant.FRAME_SCALE_PERCENT)
 
             if self.model_folder_path is not None:
                 if self.save_faces(frame, self.model_folder_path) is False:
@@ -40,7 +36,7 @@ class ComputerVision:
 
             cv2.imshow('frame', frame)
 
-            wait_key = cv2.waitKey(WAIT_KEY_MILLI_SECONDS)
+            wait_key = cv2.waitKey(constant.WAIT_KEY_MILLI_SECONDS)
 
             if wait_key == ord('q'):
                 self.stop_recording()
@@ -51,7 +47,7 @@ class ComputerVision:
         print("Computer Vision Stopped...")
 
     def add_face(self, label: str):
-        self.model_folder_path = os.path.join(BASE_DIR, "training_images" + "/" + label)
+        self.model_folder_path = os.path.join(constant.TRAINING_IMAGES_DIR, label)
         if os.path.exists(self.model_folder_path):
             self.image_count = len(os.listdir(self.model_folder_path))
         else:
@@ -65,10 +61,10 @@ class ComputerVision:
         files = os.listdir(model_folder_path)
         file_count = len(files)
 
-        if file_count >= (self.image_count + DEFAULT_IMAGE_COUNT):
+        if file_count >= (self.image_count + constant.DEFAULT_IMAGE_COUNT):
             return False
 
-        faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
+        faces = self.cascade_classifier.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
         img_item = model_folder_path + "/" + str(file_count + 1) + ".jpg"
 
         if len(faces) > 0:
@@ -87,7 +83,7 @@ class ComputerVision:
             print("Error: Model training failed...")
 
     def load_latest_model(self):
-        latest_model_dir = os.path.join(BASE_DIR, "model")
+        latest_model_dir = constant.MODEL_DIR
         if not latest_model_dir:
             return
         trainer_file = latest_model_dir + "/" + "trainer.yml"
@@ -109,7 +105,7 @@ class ComputerVision:
             return
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
+        faces = self.cascade_classifier.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
         for (x, y, w, h) in faces:
             roi_gray = gray[y: y+h, x: x+w]
 
@@ -118,11 +114,10 @@ class ComputerVision:
                 print("label_id: ", id_)
                 print("label: ", self.labels[id_])
 
-    @staticmethod
-    def show_rect(frame, faces=None):
+    def show_rect(self, frame, faces=None):
         
         if faces is None:
-            faces = HAARCASCADE_FRONTAL_FACE_ALT2.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
+            faces = self.cascade_classifier.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
 
         for (x, y, w, h) in faces:
             color = (255, 0, 0)
