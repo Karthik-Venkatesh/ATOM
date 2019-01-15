@@ -5,14 +5,12 @@ import numpy as np
 from numpy.core.multiarray import ndarray
 import cv2
 import pickle
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CASCADE_PATH = os.path.join(BASE_DIR, "cascades/data")
+from constants import constant
 
 
 class ModelTrainer:
 
-    face_cascade = cv2.CascadeClassifier(CASCADE_PATH + "/haarcascades/haarcascade_frontalface_alt2.xml")
+    face_cascade = cv2.CascadeClassifier(constant.HAARCASCADE_FRONTAL_FACE_ALT2)
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     current_id = 0
@@ -21,7 +19,7 @@ class ModelTrainer:
     y_labels = []
 
     def train_model(self):
-        training_images_dir = os.path.join(BASE_DIR, "training_images")
+        training_images_dir = constant.TRAINING_IMAGES_DIR
         for root, dirs, files in os.walk(training_images_dir):
             for file in files:
                 if file.endswith("png") or file.endswith("jpg"):
@@ -54,7 +52,7 @@ class ModelTrainer:
             return True
 
     def save_model(self):
-        model_dir = os.path.join(BASE_DIR, "model")
+        model_dir = constant.MODEL_DIR
 
         if not os.path.exists(model_dir):
             os.makedirs(model_dir)
@@ -70,7 +68,7 @@ class ModelTrainer:
 
     @staticmethod
     def delete_trained_images():
-        # images_dir = os.path.join(BASE_DIR, "training_images")
+        # images_dir = constant.TRAINING_IMAGES_DIR
         # shutil.rmtree(images_dir)
         print("Deleting trained images be implemented in feature")
         print("For detail check latest comment on github issue: https://github.com/Karthik-Venkatesh/atom/issues/13")
