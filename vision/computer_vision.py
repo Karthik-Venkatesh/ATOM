@@ -114,7 +114,7 @@ class ComputerVision:
             roi_gray = gray[y: y+h, x: x+w]
 
             id_, conf = self.recognizer.predict(roi_gray)
-            if conf > 45:
+            if conf < 45:
                 print("label_id: ", id_)
                 print("label: ", self.labels[id_])
 
