@@ -1,3 +1,13 @@
+#
+#  sensor.py
+#  ATOM
+#
+#  Created by Karthik V.
+#  Updated copyright on 16/1/19 5:55 PM.
+#
+#  Copyright © 2018 Karthik Venkatesh. All rights reserved.
+#
+
 from vision.computer_vision import ComputerVision
 from listener.voice_listener import VoiceListener
 
