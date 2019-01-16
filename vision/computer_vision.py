@@ -5,7 +5,7 @@
 #  Created by Karthik V.
 #  Updated copyright on 16/1/19 5:56 PM.
 #
-#  Copyright © 2018 Karthik Venkatesh. All rights reserved.
+#  Copyright © 2019 Karthik Venkatesh. All rights reserved.
 #
 
 import cv2
@@ -125,7 +125,7 @@ class ComputerVision:
                 print("label: ", self.labels[id_])
 
     def show_rect(self, frame, faces=None):
-        
+
         if faces is None:
             faces = self.cascade_classifier.detectMultiScale(frame, scaleFactor=1.5, minNeighbors=5)
 
