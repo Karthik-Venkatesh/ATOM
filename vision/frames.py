@@ -1,3 +1,13 @@
+#
+#  frames.py
+#  ATOM
+#
+#  Created by Karthik V.
+#  Updated copyright on 16/1/19 5:56 PM.
+#
+#  Copyright © 2018 Karthik Venkatesh. All rights reserved.
+#
+
 import cv2
 
 
