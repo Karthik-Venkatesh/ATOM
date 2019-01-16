@@ -1,4 +1,6 @@
-# atom
+# ATOM
+
+ATOM - The name come from RealSteel Movie robot ATOM. I took that name because that robot learns moves in that movie from user inputs.
 
 On the road map of creating AI like IronMan J.A.R.V.I.S :stuck_out_tongue_winking_eye:.
 
