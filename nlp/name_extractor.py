@@ -1,3 +1,12 @@
+#
+#  name_extractor.py
+#  ATOM
+#
+#  Created by Karthik V.
+#  Updated copyright on 16/1/19 5:54 PM.
+#
+#  Copyright © 2018 Karthik Venkatesh. All rights reserved.
+#
 
 # Reference
 # Question link: https://stackoverflow.com/questions/20290870/improving-the-extraction-of-human-names-with-nltk
