@@ -1,3 +1,13 @@
+/*
+ * vision.go
+ * ATOM
+ *
+ * Created by Karthik V
+ * Created on Mon Feb 04 2019 9:26:36 PM
+ *
+ * Copyright © 2019 Karthik Venkatesh. All rights reserved.
+ */
+
 package vision
 
 import (
