@@ -8,6 +8,6 @@ import (
 
 func main() {
 	fmt.Println("ATOM...")
-	v := vision.Vision{}
+	v := vision.NewVision()
 	v.StartVision()
 }
