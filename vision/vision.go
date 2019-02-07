@@ -11,12 +11,17 @@
 package vision
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/color"
+	"io/ioutil"
+	"os"
 	"path"
 	"runtime"
+	"strconv"
 
+	"github.com/ATOM/constants"
 	"gocv.io/x/gocv"
 )
 
@@ -61,6 +66,10 @@ func (v *Vision) StartVision() {
 		rects := classifier.DetectMultiScaleWithParams(img, 1.1, 5, 0, image.Point{X: 100, Y: 100}, image.Point{X: 500, Y: 500})
 		fmt.Printf("found %d faces\n", len(rects))
 
+		if len(rects) > 0 {
+			v.saveFacesImage(img)
+		}
+
 		v.drawRect(rects, img)
 
 		// show the image in the window, and wait 1 millisecond
@@ -101,4 +110,32 @@ func (v *Vision) frontalFaceClassifier() (c gocv.CascadeClassifier, e error) {
 	}
 	e = fmt.Errorf("Error: haarcascade_frontalface_alt2 laoding xml")
 	return c, e
+}
+
+func (v *Vision) saveFacesImage(img gocv.Mat) {
+
+	trainningImagesDir := constants.TrainningImagesDir()
+
+	if _, err := os.Stat(trainningImagesDir); os.IsNotExist(err) {
+		err := os.MkdirAll(trainningImagesDir, os.ModePerm)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+	files, _ := ioutil.ReadDir(trainningImagesDir)
+	fileCount := len(files)
+
+	if fileCount >= 20 {
+		return
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString(trainningImagesDir)
+	buffer.WriteString("/image_")
+	buffer.WriteString(strconv.Itoa(fileCount + 1))
+	buffer.WriteString(".jpg")
+	newFileName := buffer.String()
+
+	fmt.Println(newFileName)
+	gocv.IMWrite(newFileName, img)
 }
