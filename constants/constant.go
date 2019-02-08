@@ -1,24 +1,22 @@
 package constants
 
 import (
-	"bytes"
 	"path"
 	"runtime"
+
+	"github.com/ATOM/utills"
 )
 
 func TrainningImagesDir() string {
-	var buffer bytes.Buffer
-	buffer.WriteString(ProjectFolder())
-	buffer.WriteString("/data/training_images")
-	newFileName := buffer.String()
-	return newFileName
+	pathComponents := []string{ProjectFolder(), "/data/training_images"}
+	path := utills.JoinStrings(pathComponents)
+	return path
 }
 
 func ProjectFolder() string {
 	_, filename, _, _ := runtime.Caller(1)
-	var buffer bytes.Buffer
-	buffer.WriteString(path.Dir(filename))
-	buffer.WriteString("/..")
-	projectPath := path.Clean(buffer.String())
+	pathComponents := []string{path.Dir(filename), "/.."}
+	projectPath := utills.JoinStrings(pathComponents)
+	projectPath = path.Clean(projectPath)
 	return projectPath
 }

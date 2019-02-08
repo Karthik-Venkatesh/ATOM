@@ -11,7 +11,6 @@
 package vision
 
 import (
-	"bytes"
 	"fmt"
 	"image"
 	"image/color"
@@ -22,6 +21,7 @@ import (
 	"strconv"
 
 	"github.com/ATOM/constants"
+	"github.com/ATOM/utills"
 	"gocv.io/x/gocv"
 )
 
@@ -129,13 +129,8 @@ func (v *Vision) saveFacesImage(img gocv.Mat) {
 		return
 	}
 
-	var buffer bytes.Buffer
-	buffer.WriteString(trainningImagesDir)
-	buffer.WriteString("/image_")
-	buffer.WriteString(strconv.Itoa(fileCount + 1))
-	buffer.WriteString(".jpg")
-	newFileName := buffer.String()
+	pathComponents := []string{trainningImagesDir, "/image_", strconv.Itoa(fileCount + 1), ".jpg"}
+	path := utills.JoinStrings(pathComponents)
 
-	fmt.Println(newFileName)
-	gocv.IMWrite(newFileName, img)
+	gocv.IMWrite(path, img)
 }
