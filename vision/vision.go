@@ -16,11 +16,8 @@ import (
 	"image/color"
 	"io/ioutil"
 	"os"
-	"path"
-	"runtime"
 	"strconv"
 
-	"github.com/ATOM/constants"
 	"github.com/ATOM/utills"
 	"gocv.io/x/gocv"
 )
@@ -28,10 +25,12 @@ import (
 type Vision struct {
 	videoCapture *gocv.VideoCapture
 	window       *gocv.Window
+	Classifier   *Classifier
 }
 
 func NewVision() *Vision {
 	v := Vision{}
+	v.Classifier = NewClassifier()
 	return &v
 }
 
@@ -49,9 +48,9 @@ func (v *Vision) StartVision() {
 	defer img.Close()
 
 	// load classifier to recognize faces
-	classifier, e := v.frontalFaceClassifier()
-	if e != nil {
-		fmt.Printf(e.Error())
+	classifier := v.Classifier
+	if classifier == nil {
+		fmt.Printf("Error: haarcascade_frontalface_alt2 laoding xml")
 	}
 
 	for {
@@ -63,7 +62,7 @@ func (v *Vision) StartVision() {
 		}
 
 		// detect faces
-		rects := classifier.DetectMultiScaleWithParams(img, 1.1, 5, 0, image.Point{X: 100, Y: 100}, image.Point{X: 500, Y: 500})
+		rects := classifier.FrontalFace.DetectMultiScaleWithParams(img, 1.1, 5, 0, image.Point{X: 100, Y: 100}, image.Point{X: 500, Y: 500})
 		fmt.Printf("found %d faces\n", len(rects))
 
 		if len(rects) > 0 {
@@ -99,22 +98,9 @@ func (v *Vision) drawRect(rects []image.Rectangle, img gocv.Mat) {
 	}
 }
 
-func (v *Vision) frontalFaceClassifier() (c gocv.CascadeClassifier, e error) {
-	// load classifier to recognize faces
-	_, filename, _, _ := runtime.Caller(1)
-	c = gocv.NewCascadeClassifier()
-	cascadePath := path.Join(path.Dir(filename), "cascades/data/haarcascades/haarcascade_frontalface_alt2.xml")
-	success := c.Load(cascadePath)
-	if success {
-		return c, nil
-	}
-	e = fmt.Errorf("Error: haarcascade_frontalface_alt2 laoding xml")
-	return c, e
-}
-
 func (v *Vision) saveFacesImage(img gocv.Mat) {
 
-	trainningImagesDir := constants.TrainningImagesDir()
+	trainningImagesDir := utills.LabeledDir("Karthik")
 
 	if _, err := os.Stat(trainningImagesDir); os.IsNotExist(err) {
 		err := os.MkdirAll(trainningImagesDir, os.ModePerm)
@@ -131,6 +117,10 @@ func (v *Vision) saveFacesImage(img gocv.Mat) {
 
 	pathComponents := []string{trainningImagesDir, "/image_", strconv.Itoa(fileCount + 1), ".jpg"}
 	path := utills.JoinStrings(pathComponents)
-
 	gocv.IMWrite(path, img)
+}
+
+func (v *Vision) TrainModel() {
+	m := ModelTrainer{}
+	m.trainModel()
 }

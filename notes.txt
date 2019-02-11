@@ -1,0 +1,2 @@
+go get -u -d gocv.io/x/gocv
+go get github.com/mattn/go-sqlite3
