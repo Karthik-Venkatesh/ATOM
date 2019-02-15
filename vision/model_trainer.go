@@ -35,7 +35,9 @@ func (m *ModelTrainer) trainModel() {
 	var images []gocv.Mat
 	var labels []string
 	classifier := NewClassifier()
-	filepath.Walk(utills.TrainningImagesDir(), func(path string, info os.FileInfo, err error) error {
+	peoplesDir := utills.PeoplesImagesDir()
+
+	filepath.Walk(peoplesDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", path, err)
 			return err
@@ -52,6 +54,11 @@ func (m *ModelTrainer) trainModel() {
 		}
 		return nil
 	})
+
+	if len(images) == 0 {
+		return
+	}
+
 	labelIds := m.labelIdsForImages(images, labels)
 	recognizer := contrib.NewLBPHFaceRecognizer()
 	modelPath := utills.ModelPath()
@@ -62,7 +69,7 @@ func (m *ModelTrainer) trainModel() {
 		recognizer.Update(images, labelIds)
 	}
 	recognizer.SaveFile(modelPath)
-	err := utills.RemoveContents(utills.TrainningImagesDir())
+	err = utills.RemoveContents(peoplesDir)
 	if err != nil {
 		fmt.Println("Delete training images: ", err)
 	}

@@ -24,6 +24,12 @@ func TrainningImagesDir() string {
 	return path
 }
 
+func PeoplesImagesDir() string {
+	pathComponents := []string{TrainningImagesDir(), "/peoples"}
+	path := JoinStrings(pathComponents)
+	return path
+}
+
 func ProjectFolder() string {
 	_, filename, _, _ := runtime.Caller(1)
 	pathComponents := []string{path.Dir(filename), "/.."}
@@ -47,7 +53,7 @@ func HaarCascadesDir() string {
 }
 
 func LabeledDir(label string) string {
-	pathComponents := []string{TrainningImagesDir(), "/", label}
+	pathComponents := []string{PeoplesImagesDir(), "/", label}
 	path := JoinStrings(pathComponents)
 	return path
 }
@@ -78,9 +84,18 @@ func createDirIfNotExists(path string) {
 }
 
 func RemoveContents(dir string) error {
-	err := os.RemoveAll(dir)
-	if err != nil {
-		return err
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		err := os.RemoveAll(dir)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+func IsPathExists(dir string) bool {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
