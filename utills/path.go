@@ -76,3 +76,11 @@ func createDirIfNotExists(path string) {
 		}
 	}
 }
+
+func RemoveContents(dir string) error {
+	err := os.RemoveAll(dir)
+	if err != nil {
+		return err
+	}
+	return nil
+}

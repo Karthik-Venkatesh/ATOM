@@ -54,8 +54,18 @@ func (m *ModelTrainer) trainModel() {
 	})
 	labelIds := m.labelIdsForImages(images, labels)
 	recognizer := contrib.NewLBPHFaceRecognizer()
-	recognizer.Train(images, labelIds)
-	recognizer.SaveFile(utills.ModelPath())
+	modelPath := utills.ModelPath()
+	if _, err := os.Stat(modelPath); os.IsNotExist(err) {
+		recognizer.Train(images, labelIds)
+	} else {
+		recognizer.LoadFile(modelPath)
+		recognizer.Update(images, labelIds)
+	}
+	recognizer.SaveFile(modelPath)
+	err := utills.RemoveContents(utills.TrainningImagesDir())
+	if err != nil {
+		fmt.Println("Delete training images: ", err)
+	}
 }
 
 func (m *ModelTrainer) labelIdsForImages(images []gocv.Mat, labels []string) (labelIDs []int) {
