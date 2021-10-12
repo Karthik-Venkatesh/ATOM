@@ -9,7 +9,7 @@ Jinja2==2.10
 MarkupSafe==1.1.0
 nltk==3.4
 numpy==1.15.4
-opencv-contrib-python==3.4.5.20
+opencv-contrib-python==3.4.7.28
 packaging==18.0
 Pillow==5.4.1
 PyAudio==0.2.11
